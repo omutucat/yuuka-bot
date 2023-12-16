@@ -38,11 +38,11 @@ module.exports = {
         return;
       }
 
-      await interaction.reply(
-        `ポモドーロタイマーを開始します。${workTime}分後に作業時間が終了します。`,
-      );
+      await interaction.reply(`ポモドーロタイマーを開始します。`);
 
       for (let i = 0; i < repeatTimes; i++) {
+        await interaction.followUp(`${workTime}分間の作業を始めてください。`);
+
         // 作業時間待機
         await sleep(minutesToMilliseconds(workTime));
         await interaction.followUp(
@@ -51,10 +51,9 @@ module.exports = {
 
         // 休憩時間待機
         await sleep(minutesToMilliseconds(breakTime));
-        await interaction.followUp(
-          '休憩時間が終了しました。再度作業を開始してください。',
-        );
+        await interaction.followUp('休憩時間が終了しました。');
       }
+      await interaction.followUp('ポモドーロタイマーを終了します。');
     } catch (error) {
       console.error(`エラーが発生しました: ${error}`);
       await interaction.reply('エラーが発生しました。');
