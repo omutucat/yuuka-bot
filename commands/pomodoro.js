@@ -44,6 +44,8 @@ module.exports = {
       const breakTime = interaction.options.getInteger('break');
       const repeatTimes = interaction.options.getInteger('repeat');
 
+      const targetChannel = interaction.channel;
+
       if (!isValid(workTime, breakTime, repeatTimes)) {
         await interaction.reply(
           '作業時間と休憩時間は1分以上60分以下、繰り返し回数は1以上10以下である必要があります。',
@@ -51,25 +53,27 @@ module.exports = {
         return;
       }
 
-      await interaction.reply(`ポモドーロタイマーを開始します。`);
+      await interaction.reply(
+        `ポモドーロタイマーを開始します。作業時間: ${workTime}分、休憩時間: ${breakTime}分、繰り返し回数: ${repeatTimes}回`,
+      );
 
       for (let i = 0; i < repeatTimes; i++) {
-        await interaction.followUp(`${workTime}分間の作業を始めてください。`);
+        await targetChannel.send(`${workTime}分間の作業を始めてください。`);
 
         // 作業時間待機
         await sleep(minutesToMilliseconds(workTime));
-        await interaction.followUp(
+        await targetChannel.send(
           `作業時間が終了しました。${breakTime}分間の休憩を取ってください。`,
         );
 
         // 休憩時間待機
         await sleep(minutesToMilliseconds(breakTime));
-        await interaction.followUp('休憩時間が終了しました。');
+        await targetChannel.send('休憩時間が終了しました。');
       }
-      await interaction.followUp('ポモドーロタイマーを終了します。');
+      await targetChannel.send('ポモドーロタイマーを終了します。');
     } catch (error) {
       console.error(`エラーが発生しました: ${error}`);
-      await interaction.reply('エラーが発生しました。');
+      await targetChannel.send('エラーが発生しました。');
     }
   },
 };
