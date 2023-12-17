@@ -10,6 +10,18 @@ function minutesToMilliseconds(minutes) {
   return minutes * 60 * 1000;
 }
 
+// 引数のバリデーションを行う関数
+function isValid(workTime, breakTime, repeatTimes) {
+  return (
+    workTime > 0 &&
+    workTime <= 60 &&
+    breakTime > 0 &&
+    breakTime <= 60 &&
+    repeatTimes > 0 &&
+    repeatTimes <= 10
+  );
+}
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('pomodoro')
@@ -32,9 +44,10 @@ module.exports = {
       const breakTime = interaction.options.getInteger('break');
       const repeatTimes = interaction.options.getInteger('repeat');
 
-      // バリデーション
-      if (workTime <= 0 || breakTime <= 0 || repeatTimes <= 0) {
-        await interaction.reply('すべての設定値は1以上である必要があります。');
+      if (!isValid(workTime, breakTime, repeatTimes)) {
+        await interaction.reply(
+          '作業時間と休憩時間は1分以上60分以下、繰り返し回数は1以上10以下である必要があります。',
+        );
         return;
       }
 
